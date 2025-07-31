@@ -1,9 +1,17 @@
+# netlify.toml
+
 [build]
-  command = "npm run build"
-  publish = "build/client"
-  functions = "netlify/functions"
+  command = "npm run build" # The command Netlify runs to build your app
+  publish = "build/client"  # The directory Netlify serves as your static site
 
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/server"
+  to = "/index.html"
   status = 200
+
+[functions]
+  directory = "build/server" # The directory where your serverless functions (SSR bundle) are located
+  # Netlify usually autodetects the Node.js runtime.
+  # If you face issues with very large functions, you might consider:
+  # node_bundler = "esbuild"
+  # This can sometimes reduce function size and improve build times.
