@@ -233,15 +233,22 @@ export const prepareInstructions = ({
   jobDescription: string;
 }) =>
   `You are an expert in ATS (Applicant Tracking System) and resume analysis.
-      Please analyze and rate this resume and suggest how to improve it.
-      The rating can be low if the resume is bad.
-      Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
-      If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
-      If available, use the job description for the job user is applying to to give more detailed feedback.
-      If provided, take the job description into consideration.
-      The job title is: ${jobTitle}
-      The job description is: ${jobDescription}
-      Provide the feedback using the following format:
-      ${AIResponseFormat}
-      Return the analysis as an JSON object, without any other text and without the backticks.
-      Do not include any other text or comments.`;
+  Please analyze and rate this resume and suggest how to improve it.
+  The rating can be low if the resume is bad.
+  Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
+  If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
+  If available, use the job description for the job user is applying to to give more detailed feedback.
+  If provided, take the job description into consideration.
+
+  **CRITICAL DATE INSTRUCTION FOR ATS SECTION:**
+  The current date for analysis is ${new Date().toLocaleString("en-US", { month: "short", year: "numeric" })}.
+  When analyzing employment dates, specifically for an ongoing role stated as "Month Year - Present" (e.g., "Nov 2024 - Present"), this is a standard and acceptable format.
+  Do NOT mark this as a "future date" or an "inconsistency" in the 'ATS.tips' section or anywhere else in your feedback, as it is a valid representation of current employment.
+  If your internal logic *must* flag such a date for any reason, frame it as a *minor compatibility note* for *some very old or rigid ATS systems*, and suggest "Month Year - Current Month Year" as an *optional alternative for maximum compatibility*, but do not present it as a critical "inconsistency" or error. Prioritize accuracy for ongoing roles over a potential, minor ATS parsing quirk.
+
+  The job title is: ${jobTitle}
+  The job description is: ${jobDescription}
+  Provide the feedback using the following format:
+  ${AIResponseFormat}
+  Return the analysis as an JSON object, without any other text and without the backticks.
+  Do not include any other text or comments.`;

@@ -7,26 +7,38 @@ interface FileUploaderProps {
 }
 
 const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0] || null;
-
-      onFileSelect?.(file);
+      setSelectedFile(file); // Update local state
+      onFileSelect?.(file); // Notify parent
     },
     [onFileSelect]
   );
 
   const maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
-    useDropzone({
-      onDrop,
-      multiple: false,
-      accept: { "application/pdf": [".pdf"] },
-      maxSize: maxFileSize,
-    });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    multiple: false,
+    accept: { "application/pdf": [".pdf"] },
+    maxSize: maxFileSize,
+  });
 
-  const file = acceptedFiles[0] || null;
+  // Handle file removal
+  const handleRemoveFile = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent triggering the dropzone
+      setSelectedFile(null); // Clear local state
+      onFileSelect?.(null); // Notify parent
+      console.log("File removed, selectedFile set to null");
+    },
+    [onFileSelect]
+  );
+
+  console.log("Current selectedFile:", selectedFile);
 
   return (
     <div className="w-full gradient-border">
@@ -34,7 +46,7 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
         <input {...getInputProps()} />
 
         <div className="space-y-4 cursor-pointer">
-          {file ? (
+          {selectedFile ? (
             <div
               className="uploader-selected-file"
               onClick={(e) => e.stopPropagation()}
@@ -43,19 +55,14 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
               <div className="flex items-center space-x-3">
                 <div>
                   <p className="text-sm font-medium text-gray-700 truncate max-w-xs">
-                    {file.name}
+                    {selectedFile.name}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {formatSize(file.size)}
+                    {formatSize(selectedFile.size)}
                   </p>
                 </div>
               </div>
-              <button
-                className="p-2 cursor-pointer"
-                onClick={(e) => {
-                  onFileSelect?.(null);
-                }}
-              >
+              <button className="p-2 cursor-pointer" onClick={handleRemoveFile}>
                 <img src="/icons/cross.svg" alt="remove" className="w-4 h-4" />
               </button>
             </div>
@@ -78,4 +85,5 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
     </div>
   );
 };
+
 export default FileUploader;
