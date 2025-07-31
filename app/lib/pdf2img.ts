@@ -76,6 +76,7 @@ export async function convertPdfToImage(
       ); // Set quality to maximum (1.0)
     });
   } catch (err) {
+    console.error("Error in convertPdfToImage:", err);
     return {
       imageUrl: "",
       file: null,
